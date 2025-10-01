@@ -29,9 +29,8 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 100,
-        backgroundColor: Theme.of(context).primaryColor,
         title: Image.asset(
-          'assets/images/home/title.png',
+          '',
           fit: BoxFit.cover,
           colorBlendMode: BlendMode.color,
         ),

@@ -18,26 +18,27 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<WorkoutProvider>();
+    final sex = provider.personalInfo?.sex;
+    final bool isFemale = sex == 'female';
     return MaterialApp.router(
       routerConfig: router,
       title: 'Workout App',
       theme: ThemeData(
         useMaterial3: true,
-        brightness: provider.darkMode ? Brightness.dark : Brightness.light,
+        // Always use dark theme; remove light theme
+        brightness: Brightness.dark,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.blueGrey,
-          brightness: provider.darkMode ? Brightness.dark : Brightness.light,
+          // Deep purple accents for female, blueGrey otherwise
+          seedColor: isFemale ? Colors.deepPurple : Colors.blueGrey,
+          brightness: Brightness.dark,
         ),
-        scaffoldBackgroundColor: provider.darkMode
-            ? const Color.fromARGB(255, 0, 0, 0)
-            : null,
-        appBarTheme: AppBarTheme(
-          backgroundColor: provider.darkMode
-              ? const Color.fromARGB(255, 0, 0, 0)
-              : null,
+        // Keep background and app bar black for all (including female)
+        scaffoldBackgroundColor: const Color.fromARGB(255, 0, 0, 0),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color.fromARGB(255, 0, 0, 0),
         ),
         cardTheme: CardThemeData(
-          color: provider.darkMode ? Colors.grey[800] : Colors.grey[100],
+          color: Colors.grey[800],
           elevation: 4,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
