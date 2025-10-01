@@ -91,11 +91,12 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                 onChanged: (v) => setState(() => _sex = v ?? 'male'),
               ),
               const SizedBox(height: 20),
-              if (bmi != null)
+              if (bmi != null) ...[
                 Text(
-                  'BMI: ${bmi.toStringAsFixed(1)} (${_bmiCategory(bmi)})',
+                  'BMI: ${bmi.toStringAsFixed(1)} (${_bmiCategory(bmi)}) • Ideal weight: ${_idealWeightKg(provider.personalInfo).toStringAsFixed(1)} kg',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
+              ],
               const SizedBox(height: 20),
               FilledButton(
                 onPressed: () async {
@@ -126,4 +127,18 @@ String _bmiCategory(double bmi) {
   if (bmi < 25) return 'Normal';
   if (bmi < 30) return 'Overweight';
   return 'Obese';
+}
+
+double _idealWeightKg(PersonalInfo? info) {
+  if (info == null || info.heightCm <= 0) return 0;
+  // Devine formula: base at 5ft (152.4cm), +2.3kg per inch over
+  final bool isFemale = info.sex == 'female';
+  final double baseKg = isFemale ? 45.5 : 50.0;
+  final double heightInches = info.heightCm / 2.54;
+  final double inchesOverFiveFeet = heightInches - 60.0;
+  final double additional = inchesOverFiveFeet > 0
+      ? inchesOverFiveFeet * 2.3
+      : 0.0;
+  final double ideal = baseKg + additional;
+  return ideal > 0 ? ideal : baseKg;
 }

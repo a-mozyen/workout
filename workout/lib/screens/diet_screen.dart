@@ -91,7 +91,7 @@ class _DietScreenState extends State<DietScreen> {
     final fat = info.weightKg * 0.9; // g/day
     final carbsKcal = tdee - (protein * 4) - (fat * 9);
     final carbs = (carbsKcal / 4).clamp(0, 1000);
-    return 'Calories: ${tdee.round()} kcal  •  Protein: ${protein.round()} g  •  Fat: ${fat.round()} g  •  Carbs: ${carbs.round()} g';
+    return 'Calories: ${tdee.round()} kcal  •  Protein: ${protein.round()} g  \nFat: ${fat.round()} g  •  Carbs: ${carbs.round()} g';
   }
 }
 

@@ -26,6 +26,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<WorkoutProvider>();
+    final bool isFemale = provider.personalInfo?.sex == 'female';
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 100,
@@ -77,14 +79,20 @@ class _HomeScreenState extends State<HomeScreen> {
             _buildNavigationCard(
               context,
               // 'Add Workout',
-              'assets/images/home/add-workout.png', // add workout image path
+              _resolvedAsset(
+                basePath: 'assets/images/home/add-workout.png',
+                isFemale: isFemale,
+              ),
               () => context.go('/add-workout'),
             ),
             const SizedBox(height: 20),
             _buildNavigationCard(
               context,
               // 'My Workouts',
-              'assets/images/home/my-workout.png', // my workout image path
+              _resolvedAsset(
+                basePath: 'assets/images/home/my-workout.png',
+                isFemale: isFemale,
+              ),
               () => context.go('/my-workouts'),
             ),
           ],
@@ -131,12 +139,12 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Card(
         clipBehavior: Clip.antiAlias,
         child: SizedBox(
-          width: 400,
+          width: 350,
           height: 300,
           child: Stack(
             alignment: Alignment.center,
             children: [
-              Image.asset(imageUrl, width: 400, height: 400, fit: BoxFit.cover),
+              Image.asset(imageUrl, width: 350, height: 300, fit: BoxFit.cover),
               // Container(width: 250, height: 250, color: Colors.black),
               // Text(
               //   title,
@@ -151,5 +159,20 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+
+  // Returns a female-specific asset path if isFemale is true by inserting
+  // "-female" before the file extension. Falls back to the base asset at
+  // runtime if the female asset is missing using errorBuilder where used.
+  String _femaleVariantPath(String basePath) {
+    final dot = basePath.lastIndexOf('.');
+    if (dot <= 0) return basePath;
+    final name = basePath.substring(0, dot);
+    final ext = basePath.substring(dot);
+    return '$name-female$ext';
+  }
+
+  String _resolvedAsset({required String basePath, required bool isFemale}) {
+    return isFemale ? _femaleVariantPath(basePath) : basePath;
   }
 }

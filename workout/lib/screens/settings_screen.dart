@@ -64,18 +64,11 @@ class _AppSettingsTab extends StatelessWidget {
           decoration: const InputDecoration(labelText: 'Language'),
           items: const [
             DropdownMenuItem(value: 'en', child: Text('English')),
-            DropdownMenuItem(value: 'es', child: Text('Spanish')),
             DropdownMenuItem(value: 'ar', child: Text('Arabic')),
           ],
           onChanged: (v) {
             if (v != null) provider.setLanguageCode(v);
           },
-        ),
-        const SizedBox(height: 16),
-        SwitchListTile(
-          title: const Text('Dark mode'),
-          value: provider.darkMode,
-          onChanged: (v) => provider.setDarkMode(v),
         ),
       ],
     );
