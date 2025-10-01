@@ -30,46 +30,65 @@ class _HomeScreenState extends State<HomeScreen> {
     final bool isFemale = provider.personalInfo?.sex == 'female';
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 100,
+        toolbarHeight: 150,
         title: Image.asset(
           '',
           fit: BoxFit.cover,
           colorBlendMode: BlendMode.color,
         ),
         centerTitle: true,
-        leading: PopupMenuButton<String>(
-          tooltip: 'Menu',
-          icon: const Icon(Icons.menu),
-          onSelected: (value) {
-            switch (value) {
-              case 'settings':
-                context.go('/settings');
-                break;
-              case 'personal_info':
-                context.go('/personal-info');
-                break;
-              case 'diet':
-                context.go('/diet');
-                break;
-            }
-          },
-          itemBuilder: (context) => const [
-            PopupMenuItem(value: 'settings', child: Text('Settings')),
-            PopupMenuItem(value: 'personal_info', child: Text('Personal Info')),
-            PopupMenuItem(value: 'diet', child: Text('Diet')),
-          ],
+      ),
+      drawer: Drawer(
+        backgroundColor: Colors.black,
+        child: SafeArea(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              const DrawerHeader(
+                child: Text(
+                  'Menu',
+                  style: TextStyle(fontSize: 30),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              ListTile(
+                leading: const Icon(Icons.settings),
+                title: const Text('Settings'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  context.go('/settings');
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.person),
+                title: const Text('Personal Info'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  context.go('/personal-info');
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.restaurant_menu),
+                title: const Text('Diet'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  context.go('/diet');
+                },
+              ),
+            ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.black,
         shape: StadiumBorder(),
-
         materialTapTargetSize: MaterialTapTargetSize.padded,
         tooltip: 'Detect Device (AI)',
         onPressed: () => context.go('/detect-device'),
         child: Image.asset(
           'assets/icons/ai.png',
           color: Theme.of(context).colorScheme.primary,
-          height: 40,
+          height: 30,
         ),
       ),
       body: Center(
@@ -85,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               () => context.go('/add-workout'),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
             _buildNavigationCard(
               context,
               // 'My Workouts',
@@ -134,26 +153,50 @@ class _HomeScreenState extends State<HomeScreen> {
     String imageUrl,
     VoidCallback onTap,
   ) {
+    final theme = Theme.of(context);
+    final Color accent = theme.colorScheme.primary;
+    final BorderRadius borderRadius = BorderRadius.circular(12);
     return GestureDetector(
       onTap: onTap,
       child: Card(
         clipBehavior: Clip.antiAlias,
         child: SizedBox(
-          width: 350,
-          height: 300,
+          width: 380,
+          height: 200,
           child: Stack(
             alignment: Alignment.center,
             children: [
-              Image.asset(imageUrl, width: 350, height: 300, fit: BoxFit.cover),
-              // Container(width: 250, height: 250, color: Colors.black),
-              // Text(
-              //   title,
-              //   style: const TextStyle(
-              //     fontSize: 24,
-              //     fontWeight: FontWeight.bold,
-              //     color: Colors.white,
-              //   ),
-              // ),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: borderRadius,
+                  border: Border.all(
+                    color: accent.withValues(alpha: 0.6),
+                    width: 2,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: accent.withValues(alpha: 0.2),
+                      blurRadius: 8,
+                      spreadRadius: 0.5,
+                    ),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: borderRadius,
+                  child: ColorFiltered(
+                    colorFilter: ColorFilter.mode(
+                      accent.withValues(alpha: 1.0),
+                      BlendMode.hue,
+                    ),
+                    child: Image.asset(
+                      imageUrl,
+                      width: 400,
+                      height: 300,
+                      fit: BoxFit.fitWidth,
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),

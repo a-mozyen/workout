@@ -5,13 +5,17 @@ import '../models.dart';
 import '../workout_provider.dart';
 
 class ExercisesScreen extends StatelessWidget {
-  final String muscleId;
-  const ExercisesScreen({super.key, required this.muscleId});
+  final String muscleGroupId;
+  const ExercisesScreen({super.key, required this.muscleGroupId});
 
   @override
   Widget build(BuildContext context) {
+    final musclesInGroup = muscles
+        .where((m) => m.muscleGroupId == muscleGroupId)
+        .toList();
+    final muscleIdsInGroup = musclesInGroup.map((m) => m.id).toSet();
     final filteredExercises = exercises
-        .where((exercise) => exercise.muscleId == muscleId)
+        .where((e) => muscleIdsInGroup.contains(e.muscleId))
         .toList();
 
     return Scaffold(
@@ -29,16 +33,42 @@ class ExercisesScreen extends StatelessWidget {
                     contentPadding: const EdgeInsets.all(8),
                     leading: ClipRRect(
                       borderRadius: BorderRadius.circular(8),
-                      child: Image.network(
-                        exercise.imagepath,
-                        width: 60,
-                        height: 60,
-                        fit: BoxFit.cover,
-                      ),
+                      child: exercise.imagepath.isNotEmpty
+                          ? Image.asset(
+                              exercise.imagepath,
+                              width: 60,
+                              height: 60,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  width: 60,
+                                  height: 60,
+                                  color: const Color.fromARGB(255, 0, 0, 0),
+                                  alignment: Alignment.center,
+                                  child: const Icon(
+                                    Icons.image_not_supported,
+                                    color: Colors.white54,
+                                  ),
+                                );
+                              },
+                            )
+                          : Container(
+                              width: 60,
+                              height: 60,
+                              color: const Color.fromARGB(255, 0, 0, 0),
+                              alignment: Alignment.center,
+                              child: const Icon(
+                                Icons.image,
+                                color: Colors.white54,
+                              ),
+                            ),
                     ),
                     title: Text(
                       exercise.name,
                       style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Text(
+                      'Muscles: ${musclesInGroup.where((m) => m.id == exercise.muscleId).map((m) => m.name).join(', ')}',
                     ),
                     trailing: IconButton(
                       icon: Icon(

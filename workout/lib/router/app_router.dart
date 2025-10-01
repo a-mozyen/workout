@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:workout/screens/home_screen.dart';
 import 'package:workout/screens/muscle_group_screen.dart';
-import 'package:workout/screens/muscle_screen.dart';
 import 'package:workout/screens/exercises_screen.dart';
 import 'package:workout/screens/my_workout_screen.dart';
 import 'package:workout/screens/device_detection_screen.dart';
@@ -28,17 +27,8 @@ final GoRouter router = GoRouter(
               path: ':muscleGroupId',
               builder: (BuildContext context, GoRouterState state) {
                 final muscleGroupId = state.pathParameters['muscleGroupId']!;
-                return MusclesScreen(muscleGroupId: muscleGroupId);
+                return ExercisesScreen(muscleGroupId: muscleGroupId);
               },
-              routes: [
-                GoRoute(
-                  path: ':muscleId',
-                  builder: (BuildContext context, GoRouterState state) {
-                    final muscleId = state.pathParameters['muscleId']!;
-                    return ExercisesScreen(muscleId: muscleId);
-                  },
-                ),
-              ],
             ),
           ],
         ),

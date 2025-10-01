@@ -40,81 +40,103 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
   Widget build(BuildContext context) {
     final provider = context.watch<WorkoutProvider>();
     final bmi = provider.personalInfo?.bmi;
-    return Scaffold(
-      appBar: AppBar(title: const Text('Personal Info')),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              TextFormField(
-                controller: _heightCtrl,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'Height (cm)'),
-                validator: (v) {
-                  final d = double.tryParse(v ?? '');
-                  if (d == null || d <= 0) return 'Enter valid height';
-                  return null;
-                },
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _weightCtrl,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'Weight (kg)'),
-                validator: (v) {
-                  final d = double.tryParse(v ?? '');
-                  if (d == null || d <= 0) return 'Enter valid weight';
-                  return null;
-                },
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _ageCtrl,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'Age'),
-                validator: (v) {
-                  final d = int.tryParse(v ?? '');
-                  if (d == null || d <= 0) return 'Enter valid age';
-                  return null;
-                },
-              ),
-              const SizedBox(height: 12),
-              DropdownButtonFormField<String>(
-                initialValue: _sex,
-                decoration: const InputDecoration(labelText: 'Sex'),
-                items: const [
-                  DropdownMenuItem(value: 'male', child: Text('Male')),
-                  DropdownMenuItem(value: 'female', child: Text('Female')),
+    final theme = Theme.of(context);
+    return Theme(
+      data: theme.copyWith(
+        inputDecorationTheme: theme.inputDecorationTheme.copyWith(
+          // Non-floating label size
+          labelStyle: const TextStyle(fontSize: 20),
+          // Floating label size
+          floatingLabelStyle: const TextStyle(fontSize: 20),
+        ),
+      ),
+      child: Scaffold(
+        appBar: AppBar(title: const Text('Personal Info')),
+        body: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Form(
+            key: _formKey,
+            child: ListView(
+              children: [
+                TextFormField(
+                  controller: _heightCtrl,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(labelText: 'Height (cm)'),
+                  validator: (v) {
+                    final d = double.tryParse(v ?? '');
+                    if (d == null || d <= 0) return 'Enter valid height';
+                    return null;
+                  },
+                  style: const TextStyle(fontSize: 20),
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: _weightCtrl,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(labelText: 'Weight (kg)'),
+                  validator: (v) {
+                    final d = double.tryParse(v ?? '');
+                    if (d == null || d <= 0) return 'Enter valid weight';
+                    return null;
+                  },
+                  style: const TextStyle(fontSize: 20),
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: _ageCtrl,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(labelText: 'Age'),
+                  validator: (v) {
+                    final d = int.tryParse(v ?? '');
+                    if (d == null || d <= 0) return 'Enter valid age';
+                    return null;
+                  },
+                  style: const TextStyle(fontSize: 20),
+                ),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<String>(
+                  initialValue: _sex,
+                  decoration: const InputDecoration(labelText: 'Sex'),
+                  items: const [
+                    DropdownMenuItem(
+                      value: 'male',
+                      child: Text('Male', style: TextStyle(fontSize: 20)),
+                    ),
+                    DropdownMenuItem(
+                      value: 'female',
+                      child: Text('Female', style: TextStyle(fontSize: 20)),
+                    ),
+                  ],
+                  onChanged: (v) => setState(() => _sex = v ?? 'male'),
+                ),
+                const SizedBox(height: 20),
+                if (bmi != null) ...[
+                  Text(
+                    'BMI: ${bmi.toStringAsFixed(1)} (${_bmiCategory(bmi)}) • Ideal weight: ${_idealWeightKg(provider.personalInfo).toStringAsFixed(1)} kg',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
                 ],
-                onChanged: (v) => setState(() => _sex = v ?? 'male'),
-              ),
-              const SizedBox(height: 20),
-              if (bmi != null) ...[
-                Text(
-                  'BMI: ${bmi.toStringAsFixed(1)} (${_bmiCategory(bmi)}) • Ideal weight: ${_idealWeightKg(provider.personalInfo).toStringAsFixed(1)} kg',
-                  style: Theme.of(context).textTheme.titleMedium,
+                const SizedBox(height: 20),
+                FilledButton(
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      final info = PersonalInfo(
+                        heightCm: double.parse(_heightCtrl.text),
+                        weightKg: double.parse(_weightCtrl.text),
+                        sex: _sex,
+                        age: int.parse(_ageCtrl.text),
+                      );
+                      await context.read<WorkoutProvider>().setPersonalInfo(
+                        info,
+                      );
+                      if (!context.mounted) return;
+                      Navigator.of(context).pop();
+                    }
+                  },
+                  child: const Text('Save'),
                 ),
               ],
-              const SizedBox(height: 20),
-              FilledButton(
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    final info = PersonalInfo(
-                      heightCm: double.parse(_heightCtrl.text),
-                      weightKg: double.parse(_weightCtrl.text),
-                      sex: _sex,
-                      age: int.parse(_ageCtrl.text),
-                    );
-                    await context.read<WorkoutProvider>().setPersonalInfo(info);
-                    if (!context.mounted) return;
-                    Navigator.of(context).pop();
-                  }
-                },
-                child: const Text('Save'),
-              ),
-            ],
+            ),
           ),
         ),
       ),
