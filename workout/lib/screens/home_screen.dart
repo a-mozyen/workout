@@ -31,10 +31,8 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 150,
-        title: Image.asset(
-          '',
-          fit: BoxFit.cover,
-          colorBlendMode: BlendMode.color,
+        title: Text(
+          'Workout App'
         ),
         centerTitle: true,
       ),

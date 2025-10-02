@@ -47,7 +47,7 @@ class MyWorkoutsScreen extends StatelessWidget {
                       leading: ClipRRect(
                         borderRadius: BorderRadius.circular(8),
                         child: exercise.imagepath.isNotEmpty
-                            ? Image.network(
+                            ? Image.asset(
                                 exercise.imagepath,
                                 width: 50,
                                 height: 50,
