@@ -127,11 +127,21 @@ class _HomeScreenState extends State<HomeScreen> {
             Expanded(
               child: ListView(
                 children: [
-                  _buildWorkoutTypeCard(context, 'ADD WORKOUT', '', () {}),
+                  _buildWorkoutTypeCard(
+                    context,
+                    'ADD WORKOUT',
+                    '',
+                    () => context.go('/add-workout'),
+                  ),
                   const SizedBox(height: 16),
-                  _buildWorkoutTypeCard(context, 'MYWORKOUT', '', () {}),
+                  _buildWorkoutTypeCard(
+                    context,
+                    'MY WORKOUTS',
+                    '',
+                    () => context.go('/my-workouts'),
+                  ),
                   const SizedBox(height: 16),
-                  _buildWorkoutTypeCard(context, 'EMPTY', '', () {}),
+                  _buildWorkoutTypeCard(context, 'EMPTY FOR NOW', '', () {}),
                 ],
               ),
             ),
