@@ -74,14 +74,24 @@ class PersonalInfo {
   }
 }
 
-class DietEntry {
-  final DateTime date;
-  final String mealName; // Breakfast, Lunch, etc.
-  final String details; // Free text or structured summary
+class FoodItem {
+  final String foodType;
+  final String quantity;
 
-  const DietEntry({
-    required this.date,
-    required this.mealName,
-    required this.details,
+  const FoodItem({
+    required this.foodType,
+    required this.quantity,
+  });
+}
+
+class Meal {
+  final String name; // Breakfast, Lunch, etc.
+  final String day; // Monday, Tuesday, etc.
+  final List<FoodItem> items;
+
+  const Meal({
+    required this.name,
+    required this.day,
+    this.items = const [],
   });
 }

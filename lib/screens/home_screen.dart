@@ -18,44 +18,79 @@ class _HomeScreenState extends State<HomeScreen> {
     super.didChangeDependencies();
     if (!_promptChecked) {
       _promptChecked = true;
-      WidgetsBinding.instance.addPostFrameCallback(
-        (_) => _maybePromptForPersonalInfo(),
-      );
+      final provider = context.read<WorkoutProvider>();
+      if (!provider.isLoading) {
+        WidgetsBinding.instance.addPostFrameCallback(
+          (_) => _maybePromptForPersonalInfo(),
+        );
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<WorkoutProvider>();
-    final bool isFemale = provider.personalInfo?.sex == 'female';
+    if (provider.isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
     return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: 150,
-        title: Text(
-          'Workout App'
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(100.0),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 8.0,
+            ),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).appBarTheme.backgroundColor,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  Builder(
+                    builder: (context) => IconButton(
+                      icon: const Icon(Icons.menu, color: Colors.white),
+                      onPressed: () => Scaffold.of(context).openDrawer(),
+                    ),
+                  ),
+                  const Expanded(
+                    child: Center(
+                      child: Text(
+                        'WORKOUT',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
-        centerTitle: true,
       ),
       drawer: Drawer(
-        backgroundColor: Colors.black,
         child: SafeArea(
           child: ListView(
             padding: EdgeInsets.zero,
             children: [
               const DrawerHeader(
-                child: Text(
-                  'Menu',
-                  style: TextStyle(fontSize: 30),
-                  textAlign: TextAlign.center,
+                child: Stack(
+                  children: [
+                    Align(alignment: Alignment.centerLeft, child: BackButton()),
+                    Align(
+                      alignment: Alignment.center,
+                      child: IconButton(
+                        onPressed: null,
+                        icon: Icon(Icons.account_circle_rounded, size: 50),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              ListTile(
-                leading: const Icon(Icons.settings),
-                title: const Text('Settings'),
-                onTap: () {
-                  Navigator.of(context).pop();
-                  context.go('/settings');
-                },
               ),
               ListTile(
                 leading: const Icon(Icons.person),
@@ -73,44 +108,45 @@ class _HomeScreenState extends State<HomeScreen> {
                   context.go('/diet');
                 },
               ),
+              ListTile(
+                leading: const Icon(Icons.settings),
+                title: const Text('Settings'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  context.go('/settings');
+                },
+              ),
             ],
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.black,
-        shape: StadiumBorder(),
-        materialTapTargetSize: MaterialTapTargetSize.padded,
-        tooltip: 'Detect Device (AI)',
-        onPressed: () => context.go('/detect-device'),
-        child: Image.asset(
-          'assets/icons/ai.png',
-          color: Theme.of(context).colorScheme.primary,
-          height: 30,
-        ),
-      ),
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            _buildNavigationCard(
-              context,
-              // 'Add Workout',
-              _resolvedAsset(
-                basePath: 'assets/images/home/add-workout.png',
-                isFemale: isFemale,
+            Expanded(
+              child: ListView(
+                children: [
+                  _buildWorkoutTypeCard(context, 'ADD WORKOUT', '', () {}),
+                  const SizedBox(height: 16),
+                  _buildWorkoutTypeCard(context, 'MYWORKOUT', '', () {}),
+                  const SizedBox(height: 16),
+                  _buildWorkoutTypeCard(context, 'EMPTY', '', () {}),
+                ],
               ),
-              () => context.go('/add-workout'),
             ),
-            const SizedBox(height: 30),
-            _buildNavigationCard(
-              context,
-              // 'My Workouts',
-              _resolvedAsset(
-                basePath: 'assets/images/home/my-workout.png',
-                isFemale: isFemale,
+            const SizedBox(height: 16),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: Colors.white,
+                minimumSize: const Size(double.infinity, 50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
-              () => context.go('/my-workouts'),
+              onPressed: () => context.go('/detect-device'),
+              child: const Text('AI DETECTION', style: TextStyle(fontSize: 16)),
             ),
           ],
         ),
@@ -145,75 +181,45 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildNavigationCard(
+  Widget _buildWorkoutTypeCard(
     BuildContext context,
-    // String title,
-    String imageUrl,
+    String title,
+    String imagePath,
     VoidCallback onTap,
   ) {
-    final theme = Theme.of(context);
-    final Color accent = theme.colorScheme.primary;
-    final BorderRadius borderRadius = BorderRadius.circular(12);
     return GestureDetector(
       onTap: onTap,
       child: Card(
         clipBehavior: Clip.antiAlias,
-        child: SizedBox(
-          width: 380,
-          height: 200,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: borderRadius,
-                  border: Border.all(
-                    color: accent.withValues(alpha: 0.6),
-                    width: 2,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: accent.withValues(alpha: 0.2),
-                      blurRadius: 8,
-                      spreadRadius: 0.5,
-                    ),
-                  ],
-                ),
-                child: ClipRRect(
-                  borderRadius: borderRadius,
-                  child: ColorFiltered(
-                    colorFilter: ColorFilter.mode(
-                      accent.withValues(alpha: 1.0),
-                      BlendMode.hue,
-                    ),
-                    child: Image.asset(
-                      imageUrl,
-                      width: 400,
-                      height: 300,
-                      fit: BoxFit.fitWidth,
-                    ),
-                  ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: Stack(
+          alignment: Alignment.bottomCenter,
+          children: [
+            Image.asset(
+              imagePath,
+              fit: BoxFit.cover,
+              width: double.infinity,
+              height: 150,
+            ),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(8.0),
+              decoration: BoxDecoration(
+                color: Colors.black.withValues(alpha: 0.5),
+              ),
+              child: Text(
+                title,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
-  }
-
-  // Returns a female-specific asset path if isFemale is true by inserting
-  // "-female" before the file extension. Falls back to the base asset at
-  // runtime if the female asset is missing using errorBuilder where used.
-  String _femaleVariantPath(String basePath) {
-    final dot = basePath.lastIndexOf('.');
-    if (dot <= 0) return basePath;
-    final name = basePath.substring(0, dot);
-    final ext = basePath.substring(dot);
-    return '$name-female$ext';
-  }
-
-  String _resolvedAsset({required String basePath, required bool isFemale}) {
-    return isFemale ? _femaleVariantPath(basePath) : basePath;
   }
 }

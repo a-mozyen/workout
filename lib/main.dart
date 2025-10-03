@@ -18,33 +18,39 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<WorkoutProvider>();
-    final sex = provider.personalInfo?.sex;
-    final bool isFemale = sex == 'female';
+
+    final lightTheme = ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.light,
+      scaffoldBackgroundColor: const Color(0xFFF2F2F7),
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: const Color(0xFF3B82F6),
+        brightness: Brightness.light,
+      ),
+      appBarTheme: const AppBarTheme(
+        backgroundColor: Color(0xFF2C2C2E),
+      ),
+    );
+
+    final darkTheme = ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.dark,
+      scaffoldBackgroundColor: const Color(0xFF1E1E1E),
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: const Color(0xFF3B82F6),
+        brightness: Brightness.dark,
+      ),
+      appBarTheme: const AppBarTheme(
+        backgroundColor: Color(0xFF2C2C2E),
+      ),
+    );
+
     return MaterialApp.router(
       routerConfig: router,
       title: 'Workout App',
-      theme: ThemeData(
-        useMaterial3: true,
-        // Always use dark theme; remove light theme
-        brightness: Brightness.dark,
-        colorScheme: ColorScheme.fromSeed(
-          // Deep purple accents for female, blueGrey otherwise
-          seedColor: isFemale ? Colors.deepPurple : Colors.blueGrey,
-          brightness: Brightness.dark,
-        ),
-        // Keep background and app bar black for all (including female)
-        scaffoldBackgroundColor: const Color.fromARGB(255, 0, 0, 0),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Color.fromARGB(255, 0, 0, 0),
-        ),
-        cardTheme: CardThemeData(
-          color: Colors.grey[800],
-          elevation: 4,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(50),
-          ),
-        ),
-      ),
+      theme: lightTheme,
+      darkTheme: darkTheme,
+      themeMode: provider.darkMode ? ThemeMode.dark : ThemeMode.light,
     );
   }
 }

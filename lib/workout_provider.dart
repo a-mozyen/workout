@@ -12,11 +12,13 @@ class WorkoutProvider with ChangeNotifier {
   bool _hasCompletedOnboarding = false;
   bool _darkMode = true;
   String _languageCode = 'en';
+  bool _isLoading = true;
 
   PersonalInfo? get personalInfo => _personalInfo;
   bool get hasCompletedOnboarding => _hasCompletedOnboarding;
   bool get darkMode => _darkMode;
   String get languageCode => _languageCode;
+  bool get isLoading => _isLoading;
 
   Future<void> loadState() async {
     final prefs = await SharedPreferences.getInstance();
@@ -35,6 +37,7 @@ class WorkoutProvider with ChangeNotifier {
         age: age,
       );
     }
+    _isLoading = false;
     notifyListeners();
   }
 
@@ -83,7 +86,8 @@ class WorkoutProvider with ChangeNotifier {
   void addExercise(String day, Exercise exercise) {
     if (_workouts.containsKey(day)) {
       _workouts[day]!.add(exercise);
-    } else {
+    }
+    else {
       _workouts[day] = [exercise];
     }
     notifyListeners();
@@ -95,7 +99,8 @@ class WorkoutProvider with ChangeNotifier {
       if (_workouts[day]!.isEmpty) {
         _workouts.remove(day);
         _completedExercisesByDay.remove(day);
-      } else {
+      }
+      else {
         // Also clear completion state for this exercise
         _completedExercisesByDay[day]?.remove(exercise.id);
       }

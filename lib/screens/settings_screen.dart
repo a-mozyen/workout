@@ -30,9 +30,12 @@ class _SettingsScreenState extends State<SettingsScreen>
     final provider = context.watch<WorkoutProvider>();
     return Scaffold(
       appBar: AppBar(
+        foregroundColor: Colors.white,
         title: const Text('Settings'),
+        centerTitle: true,
         bottom: TabBar(
           controller: _tabController,
+          labelColor: Colors.white,
           tabs: const [
             Tab(text: 'App'),
             Tab(text: 'Notifications'),
@@ -59,6 +62,13 @@ class _AppSettingsTab extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
+        SwitchListTile(
+          title: const Text('Dark Mode'),
+          value: provider.darkMode,
+          onChanged: (value) {
+            provider.setDarkMode(value);
+          },
+        ),
         DropdownButtonFormField<String>(
           initialValue: provider.languageCode,
           decoration: const InputDecoration(labelText: 'Language'),

@@ -11,17 +11,21 @@ class DietScreen extends StatefulWidget {
 }
 
 class _DietScreenState extends State<DietScreen> {
-  final List<DietEntry> _entries = [];
+  final List<Meal> _meals = [];
 
   @override
   Widget build(BuildContext context) {
     final info = context.watch<WorkoutProvider>().personalInfo;
     final recommendation = _recommendationFor(info);
     return Scaffold(
-      appBar: AppBar(title: const Text('Diet')),
+      appBar: AppBar(
+        foregroundColor: Colors.white,
+        title: const Text('Diet'),
+        centerTitle: true,
+      ),
       floatingActionButton: FloatingActionButton(
         tooltip: 'Add meal',
-        onPressed: _addEntry,
+        onPressed: _addMeal,
         child: const Icon(Icons.add),
       ),
       body: Padding(
@@ -37,21 +41,51 @@ class _DietScreenState extends State<DietScreen> {
             Text(recommendation),
             const Divider(height: 32),
             Expanded(
-              child: _entries.isEmpty
+              child: _meals.isEmpty
                   ? const Center(child: Text('No meals scheduled.'))
-                  : ListView.separated(
-                      itemCount: _entries.length,
-                      separatorBuilder: (_, _) => const Divider(),
+                  : ListView.builder(
+                      itemCount: _meals.length,
                       itemBuilder: (context, index) {
-                        final e = _entries[index];
-                        return ListTile(
-                          title: Text('${e.mealName} - ${_fmtDate(e.date)}'),
-                          subtitle: Text(e.details),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.delete_outline),
-                            onPressed: () =>
-                                setState(() => _entries.removeAt(index)),
-                          ),
+                        final meal = _meals[index];
+                        return ExpansionTile(
+                          title: Text('${meal.name} - ${meal.day}'),
+                          children: [
+                            // TODO: Integrate LM here to calculate total intake from meal.items.
+                            ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: meal.items.length,
+                              itemBuilder: (context, itemIndex) {
+                                final item = meal.items[itemIndex];
+                                return ListTile(
+                                  title: Text(item.foodType),
+                                  subtitle: Text(item.quantity),
+                                  trailing: IconButton(
+                                    icon: const Icon(Icons.delete_outline),
+                                    onPressed: () {
+                                      setState(() {
+                                        final oldMeal = _meals[index];
+                                        final newItems = List<FoodItem>.from(
+                                          oldMeal.items,
+                                        )..removeAt(itemIndex);
+                                        final newMeal = Meal(
+                                          name: oldMeal.name,
+                                          day: oldMeal.day,
+                                          items: newItems,
+                                        );
+                                        _meals[index] = newMeal;
+                                      });
+                                    },
+                                  ),
+                                );
+                              },
+                            ),
+                            TextButton.icon(
+                              icon: const Icon(Icons.add),
+                              label: const Text('Add Food'),
+                              onPressed: () => _addFoodItem(index),
+                            ),
+                          ],
                         );
                       },
                     ),
@@ -62,16 +96,32 @@ class _DietScreenState extends State<DietScreen> {
     );
   }
 
-  String _fmtDate(DateTime d) =>
-      '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
-
-  void _addEntry() async {
-    final result = await showDialog<DietEntry>(
+  void _addMeal() async {
+    final result = await showDialog<Meal>(
       context: context,
-      builder: (context) => const _DietEntryDialog(),
+      builder: (context) => const _AddMealDialog(),
     );
     if (result != null) {
-      setState(() => _entries.add(result));
+      setState(() => _meals.add(result));
+    }
+  }
+
+  void _addFoodItem(int mealIndex) async {
+    final result = await showDialog<FoodItem>(
+      context: context,
+      builder: (context) => const _AddFoodItemDialog(),
+    );
+    if (result != null) {
+      setState(() {
+        final oldMeal = _meals[mealIndex];
+        final newItems = List<FoodItem>.from(oldMeal.items)..add(result);
+        final newMeal = Meal(
+          name: oldMeal.name,
+          day: oldMeal.day,
+          items: newItems,
+        );
+        _meals[mealIndex] = newMeal;
+      });
     }
   }
 
@@ -95,23 +145,21 @@ class _DietScreenState extends State<DietScreen> {
   }
 }
 
-class _DietEntryDialog extends StatefulWidget {
-  const _DietEntryDialog();
+class _AddMealDialog extends StatefulWidget {
+  const _AddMealDialog();
 
   @override
-  State<_DietEntryDialog> createState() => _DietEntryDialogState();
+  State<_AddMealDialog> createState() => _AddMealDialogState();
 }
 
-class _DietEntryDialogState extends State<_DietEntryDialog> {
+class _AddMealDialogState extends State<_AddMealDialog> {
   final _formKey = GlobalKey<FormState>();
-  DateTime _date = DateTime.now();
   final _mealCtrl = TextEditingController();
-  final _detailsCtrl = TextEditingController();
+  String _day = 'Monday';
 
   @override
   void dispose() {
     _mealCtrl.dispose();
-    _detailsCtrl.dispose();
     super.dispose();
   }
 
@@ -126,32 +174,89 @@ class _DietEntryDialogState extends State<_DietEntryDialog> {
           children: [
             TextFormField(
               controller: _mealCtrl,
-              decoration: const InputDecoration(labelText: 'Meal name'),
+              decoration: const InputDecoration(
+                labelText: 'Meal (e.g. breakfast)',
+              ),
+              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+            ),
+            const SizedBox(height: 8),
+            DropdownButtonFormField<String>(
+              initialValue: _day,
+              decoration: const InputDecoration(labelText: 'Day'),
+              items: const [
+                DropdownMenuItem(value: 'Monday', child: Text('Monday')),
+                DropdownMenuItem(value: 'Tuesday', child: Text('Tuesday')),
+                DropdownMenuItem(value: 'Wednesday', child: Text('Wednesday')),
+                DropdownMenuItem(value: 'Thursday', child: Text('Thursday')),
+                DropdownMenuItem(value: 'Friday', child: Text('Friday')),
+                DropdownMenuItem(value: 'Saturday', child: Text('Saturday')),
+                DropdownMenuItem(value: 'Sunday', child: Text('Sunday')),
+              ],
+              onChanged: (v) {
+                if (v != null) setState(() => _day = v);
+              },
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          onPressed: () {
+            if (_formKey.currentState!.validate()) {
+              Navigator.of(context).pop(Meal(name: _mealCtrl.text, day: _day));
+            }
+          },
+          child: const Text('Add'),
+        ),
+      ],
+    );
+  }
+}
+
+class _AddFoodItemDialog extends StatefulWidget {
+  const _AddFoodItemDialog();
+
+  @override
+  State<_AddFoodItemDialog> createState() => _AddFoodItemDialogState();
+}
+
+class _AddFoodItemDialogState extends State<_AddFoodItemDialog> {
+  final _formKey = GlobalKey<FormState>();
+  final _foodTypeCtrl = TextEditingController();
+  final _quantityCtrl = TextEditingController();
+
+  @override
+  void dispose() {
+    _foodTypeCtrl.dispose();
+    _quantityCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Add food item'),
+      content: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextFormField(
+              controller: _foodTypeCtrl,
+              decoration: const InputDecoration(
+                labelText: 'Food type (e.g. eggs)',
+              ),
               validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
             ),
             const SizedBox(height: 8),
             TextFormField(
-              controller: _detailsCtrl,
-              decoration: const InputDecoration(labelText: 'Details'),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Text('${_date.year}-${_date.month}-${_date.day}'),
-                const Spacer(),
-                TextButton(
-                  onPressed: () async {
-                    final picked = await showDatePicker(
-                      context: context,
-                      firstDate: DateTime(2020),
-                      lastDate: DateTime(2100),
-                      initialDate: _date,
-                    );
-                    if (picked != null) setState(() => _date = picked);
-                  },
-                  child: const Text('Pick date'),
-                ),
-              ],
+              controller: _quantityCtrl,
+              decoration: const InputDecoration(labelText: 'Quantity'),
+              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
             ),
           ],
         ),
@@ -165,10 +270,9 @@ class _DietEntryDialogState extends State<_DietEntryDialog> {
           onPressed: () {
             if (_formKey.currentState!.validate()) {
               Navigator.of(context).pop(
-                DietEntry(
-                  date: _date,
-                  mealName: _mealCtrl.text,
-                  details: _detailsCtrl.text,
+                FoodItem(
+                  foodType: _foodTypeCtrl.text,
+                  quantity: _quantityCtrl.text,
                 ),
               );
             }

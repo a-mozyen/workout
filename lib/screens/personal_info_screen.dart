@@ -51,7 +51,11 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
         ),
       ),
       child: Scaffold(
-        appBar: AppBar(title: const Text('Personal Info')),
+        appBar: AppBar(
+          foregroundColor: Colors.white,
+          title: const Text('Personal Info'),
+          centerTitle: true,
+        ),
         body: Padding(
           padding: const EdgeInsets.all(16),
           child: Form(

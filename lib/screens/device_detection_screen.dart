@@ -12,6 +12,12 @@ class _DeviceDetectionScreenState extends State<DeviceDetectionScreen> {
   DeviceInfo? _detected;
   bool _isDetecting = false;
 
+  @override
+  void initState() {
+    super.initState();
+    _runMockDetection();
+  }
+
   Future<void> _runMockDetection() async {
     setState(() {
       _isDetecting = true;
@@ -29,17 +35,12 @@ class _DeviceDetectionScreenState extends State<DeviceDetectionScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        foregroundColor: Colors.white,
         title: const Text('AI Device Detection'),
-        actions: [
-          IconButton(
-            tooltip: _isDetecting ? 'Detecting…' : 'Capture & Detect',
-            onPressed: _isDetecting ? null : _runMockDetection,
-            icon: const Icon(Icons.center_focus_strong),
-          ),
-        ],
+        centerTitle: true,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(15),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -99,10 +100,9 @@ class _DeviceDetectionScreenState extends State<DeviceDetectionScreen> {
               ),
             ] else ...[
               const Text(
-                'Point your camera at a gym device and tap detect.\n\n'
-                'Note: This demo uses mock detection so it runs without extra setup.\n'
-                'For real AI, integrate a tflite/ML Kit model and camera input.',
+                'Point your camera at a gym device and tap detect.',
                 textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16),
               ),
             ],
           ],
