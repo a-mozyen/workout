@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+// import 'package:workout/router/app_router.dart';
+// import 'package:workout/screens/diet_screen.dart';
+// import 'package:workout/screens/personal_info_screen.dart';
 import '../workout_provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -51,8 +54,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   Builder(
                     builder: (context) => IconButton(
-                      icon: const Icon(Icons.menu, color: Colors.white),
-                      onPressed: () => Scaffold.of(context).openDrawer(),
+                      icon: const Icon(Icons.settings, color: Colors.white),
+                      onPressed: () => context.go('/settings'),
                     ),
                   ),
                   const Expanded(
@@ -67,59 +70,72 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   ),
+                  Builder(
+                    builder: (context) => IconButton(
+                      alignment: Alignment.centerRight,
+                      icon: Icon(
+                        Icons.account_circle_rounded,
+                        color: Colors.white,
+                        size: 35,
+                      ),
+                      onPressed: () {
+                        context.go('/personal-info');
+                      },
+                    ),
+                  ),
                 ],
               ),
             ),
           ),
         ),
       ),
-      drawer: Drawer(
-        child: SafeArea(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: [
-              const DrawerHeader(
-                child: Stack(
-                  children: [
-                    Align(alignment: Alignment.centerLeft, child: BackButton()),
-                    Align(
-                      alignment: Alignment.center,
-                      child: IconButton(
-                        onPressed: null,
-                        icon: Icon(Icons.account_circle_rounded, size: 50),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              ListTile(
-                leading: const Icon(Icons.person),
-                title: const Text('Personal Info'),
-                onTap: () {
-                  Navigator.of(context).pop();
-                  context.go('/personal-info');
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.restaurant_menu),
-                title: const Text('Diet'),
-                onTap: () {
-                  Navigator.of(context).pop();
-                  context.go('/diet');
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.settings),
-                title: const Text('Settings'),
-                onTap: () {
-                  Navigator.of(context).pop();
-                  context.go('/settings');
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
+      // drawer: Drawer(
+      //   child: SafeArea(
+      //     child: ListView(
+      //       padding: EdgeInsets.zero,
+      //       children: [
+      //         const DrawerHeader(
+      //           child: Stack(
+      //             children: [
+      //               Align(alignment: Alignment.centerLeft, child: BackButton()),
+      //               Align(
+      //                 alignment: Alignment.center,
+      //                 child: IconButton(
+      //                   onPressed: null,
+      //                   icon: Icon(Icons.account_circle_rounded, size: 50),
+      //                 ),
+      //               ),
+      //             ],
+      //           ),
+      //         ),
+      //         ListTile(
+      //           leading: const Icon(Icons.person),
+      //           title: const Text('Personal Info'),
+      //           onTap: () {
+      //             Navigator.of(context).pop();
+      //             context.go('/personal-info');
+      //           },
+      //         ),
+      //         ListTile(
+      //           leading: const Icon(Icons.restaurant_menu),
+      //           title: const Text('Diet'),
+      //           onTap: () {
+      //             Navigator.of(context).pop();
+      //             context.go('/diet');
+      //           },
+      //         ),
+      //         ListTile(
+      //           leading: const Icon(Icons.settings),
+      //           title: const Text('Settings'),
+      //           onTap: () {
+      //             Navigator.of(context).pop();
+      //             context.go('/settings');
+      //           },
+      //         ),
+      //       ],
+      //     ),
+      //   ),
+      // ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -141,7 +157,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     () => context.go('/my-workouts'),
                   ),
                   const SizedBox(height: 16),
-                  _buildWorkoutTypeCard(context, 'EMPTY FOR NOW', '', () {}),
+                  _buildWorkoutTypeCard(
+                    context,
+                    'DIET',
+                    '',
+                    () => context.go('/diet'),
+                  ),
                 ],
               ),
             ),
@@ -149,7 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.primary,
-                foregroundColor: Colors.white,
+                foregroundColor: Colors.black,
                 minimumSize: const Size(double.infinity, 50),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
