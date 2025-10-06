@@ -15,7 +15,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
   late TextEditingController _heightCtrl;
   late TextEditingController _weightCtrl;
   late TextEditingController _ageCtrl;
-  String _sex = 'male';
+  String _gender = 'male';
 
   @override
   void initState() {
@@ -25,7 +25,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
     _heightCtrl = TextEditingController(text: info?.heightCm.toString() ?? '');
     _weightCtrl = TextEditingController(text: info?.weightKg.toString() ?? '');
     _ageCtrl = TextEditingController(text: info?.age.toString() ?? '');
-    _sex = info?.sex ?? 'male';
+    _gender = info?.gender ?? 'male';
   }
 
   @override
@@ -99,8 +99,8 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
-                  initialValue: _sex,
-                  decoration: const InputDecoration(labelText: 'Sex'),
+                  initialValue: _gender,
+                  decoration: const InputDecoration(labelText: 'gender'),
                   items: const [
                     DropdownMenuItem(
                       value: 'male',
@@ -111,7 +111,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                       child: Text('Female', style: TextStyle(fontSize: 20)),
                     ),
                   ],
-                  onChanged: (v) => setState(() => _sex = v ?? 'male'),
+                  onChanged: (v) => setState(() => _gender = v ?? 'male'),
                 ),
                 const SizedBox(height: 20),
                 if (bmi != null) ...[
@@ -127,7 +127,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                       final info = PersonalInfo(
                         heightCm: double.parse(_heightCtrl.text),
                         weightKg: double.parse(_weightCtrl.text),
-                        sex: _sex,
+                        gender: _gender,
                         age: int.parse(_ageCtrl.text),
                       );
                       await context.read<WorkoutProvider>().setPersonalInfo(
@@ -158,7 +158,7 @@ String _bmiCategory(double bmi) {
 double _idealWeightKg(PersonalInfo? info) {
   if (info == null || info.heightCm <= 0) return 0;
   // Devine formula: base at 5ft (152.4cm), +2.3kg per inch over
-  final bool isFemale = info.sex == 'female';
+  final bool isFemale = info.gender == 'female';
   final double baseKg = isFemale ? 45.5 : 50.0;
   final double heightInches = info.heightCm / 2.54;
   final double inchesOverFiveFeet = heightInches - 60.0;

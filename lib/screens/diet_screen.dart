@@ -133,7 +133,7 @@ class _DietScreenState extends State<DietScreen> {
       return 'Enter personal info to get tailored recommendations.';
     }
     // Simple Mifflin-St Jeor TDEE estimate with sedentary factor as placeholder.
-    final bmr = info.sex == 'male'
+    final bmr = info.gender == 'male'
         ? (10 * info.weightKg) + (6.25 * info.heightCm) - (5 * info.age) + 5
         : (10 * info.weightKg) + (6.25 * info.heightCm) - (5 * info.age) - 161;
     final tdee = bmr * 1.2; // sedentary

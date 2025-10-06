@@ -41,13 +41,13 @@ class Exercise {
 class PersonalInfo {
   final double heightCm;
   final double weightKg;
-  final String sex; // 'male' | 'female'
+  final String gender; // 'male' | 'female'
   final int age;
 
   const PersonalInfo({
     required this.heightCm,
     required this.weightKg,
-    required this.sex,
+    required this.gender,
     required this.age,
   });
 
@@ -60,7 +60,7 @@ class PersonalInfo {
   Map<String, Object> toJson() => {
     'heightCm': heightCm,
     'weightKg': weightKg,
-    'sex': sex,
+    'gender': gender,
     'age': age,
   };
 
@@ -68,7 +68,7 @@ class PersonalInfo {
     return PersonalInfo(
       heightCm: (json['heightCm'] as num?)?.toDouble() ?? 0,
       weightKg: (json['weightKg'] as num?)?.toDouble() ?? 0,
-      sex: (json['sex'] as String?) ?? 'male',
+      gender: (json['gender'] as String?) ?? 'male',
       age: (json['age'] as num?)?.toInt() ?? 0,
     );
   }
@@ -78,10 +78,7 @@ class FoodItem {
   final String foodType;
   final String quantity;
 
-  const FoodItem({
-    required this.foodType,
-    required this.quantity,
-  });
+  const FoodItem({required this.foodType, required this.quantity});
 }
 
 class Meal {
@@ -89,9 +86,5 @@ class Meal {
   final String day; // Monday, Tuesday, etc.
   final List<FoodItem> items;
 
-  const Meal({
-    required this.name,
-    required this.day,
-    this.items = const [],
-  });
+  const Meal({required this.name, required this.day, this.items = const []});
 }

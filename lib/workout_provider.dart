@@ -27,13 +27,13 @@ class WorkoutProvider with ChangeNotifier {
     _languageCode = prefs.getString('languageCode') ?? 'en';
     final height = prefs.getDouble('pi_heightCm');
     final weight = prefs.getDouble('pi_weightKg');
-    final sex = prefs.getString('pi_sex');
+    final gender = prefs.getString('pi_gender');
     final age = prefs.getInt('pi_age');
-    if (height != null && weight != null && sex != null && age != null) {
+    if (height != null && weight != null && gender != null && age != null) {
       _personalInfo = PersonalInfo(
         heightCm: height,
         weightKg: weight,
-        sex: sex,
+        gender: gender,
         age: age,
       );
     }
@@ -46,7 +46,7 @@ class WorkoutProvider with ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setDouble('pi_heightCm', info.heightCm);
     await prefs.setDouble('pi_weightKg', info.weightKg);
-    await prefs.setString('pi_sex', info.sex);
+    await prefs.setString('pi_gender', info.gender);
     await prefs.setInt('pi_age', info.age);
     await prefs.setBool('hasCompletedOnboarding', true);
     _hasCompletedOnboarding = true;
@@ -86,8 +86,7 @@ class WorkoutProvider with ChangeNotifier {
   void addExercise(String day, Exercise exercise) {
     if (_workouts.containsKey(day)) {
       _workouts[day]!.add(exercise);
-    }
-    else {
+    } else {
       _workouts[day] = [exercise];
     }
     notifyListeners();
@@ -99,8 +98,7 @@ class WorkoutProvider with ChangeNotifier {
       if (_workouts[day]!.isEmpty) {
         _workouts.remove(day);
         _completedExercisesByDay.remove(day);
-      }
-      else {
+      } else {
         // Also clear completion state for this exercise
         _completedExercisesByDay[day]?.remove(exercise.id);
       }

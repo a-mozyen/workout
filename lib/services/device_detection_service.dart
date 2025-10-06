@@ -11,7 +11,7 @@ class DeviceInfo {
 }
 
 class DeviceDetectionService {
-  // Placeholder for real ML inference. Returns a sample device.
+  //TODO: Placeholder for real ML inference. Returns a sample device.
   DeviceInfo detectFromMockCapture() {
     return const DeviceInfo(
       name: '...Coming Soon...',

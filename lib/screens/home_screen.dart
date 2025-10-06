@@ -79,7 +79,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         size: 35,
                       ),
                       onPressed: () {
-                        context.go('/personal-info');
+                        context.go('');
+                        //TODO: add account page path
                       },
                     ),
                   ),
@@ -89,53 +90,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-      // drawer: Drawer(
-      //   child: SafeArea(
-      //     child: ListView(
-      //       padding: EdgeInsets.zero,
-      //       children: [
-      //         const DrawerHeader(
-      //           child: Stack(
-      //             children: [
-      //               Align(alignment: Alignment.centerLeft, child: BackButton()),
-      //               Align(
-      //                 alignment: Alignment.center,
-      //                 child: IconButton(
-      //                   onPressed: null,
-      //                   icon: Icon(Icons.account_circle_rounded, size: 50),
-      //                 ),
-      //               ),
-      //             ],
-      //           ),
-      //         ),
-      //         ListTile(
-      //           leading: const Icon(Icons.person),
-      //           title: const Text('Personal Info'),
-      //           onTap: () {
-      //             Navigator.of(context).pop();
-      //             context.go('/personal-info');
-      //           },
-      //         ),
-      //         ListTile(
-      //           leading: const Icon(Icons.restaurant_menu),
-      //           title: const Text('Diet'),
-      //           onTap: () {
-      //             Navigator.of(context).pop();
-      //             context.go('/diet');
-      //           },
-      //         ),
-      //         ListTile(
-      //           leading: const Icon(Icons.settings),
-      //           title: const Text('Settings'),
-      //           onTap: () {
-      //             Navigator.of(context).pop();
-      //             context.go('/settings');
-      //           },
-      //         ),
-      //       ],
-      //     ),
-      //   ),
-      // ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -146,22 +100,29 @@ class _HomeScreenState extends State<HomeScreen> {
                   _buildWorkoutTypeCard(
                     context,
                     'ADD WORKOUT',
-                    '',
+                    'assets/images/home/add_workout.png',
                     () => context.go('/add-workout'),
                   ),
                   const SizedBox(height: 16),
                   _buildWorkoutTypeCard(
                     context,
                     'MY WORKOUTS',
-                    '',
+                    'assets/images/home/my_workout.png',
                     () => context.go('/my-workouts'),
                   ),
                   const SizedBox(height: 16),
                   _buildWorkoutTypeCard(
                     context,
                     'DIET',
-                    '',
+                    'assets/images/home/diet.png',
                     () => context.go('/diet'),
+                  ),
+                  const SizedBox(height: 16),
+                  _buildWorkoutTypeCard(
+                    context,
+                    'PERSONAL INFO',
+                    'assets/images/home/personal_info.png',
+                    () => context.go('/personal-info'),
                   ),
                 ],
               ),
